@@ -1,10 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env nix-shell
+#! nix-shell -p coreutils -i bash
+
+set -euo pipefail
+
+if [ -z "$NIX_NEW_HOME" ]; then
+    echo "NIX_NEW_HOME unset" >&2
+    exit 1
+fi
 
 # create target nix location
 mkdir -p ${NIX_NEW_HOME}/{overlays,store,var}
 
 # make sure we have the latest nix. In particular we want overlays (in nix 1.11.8+)
-nix-channel --update && nix-env -u -j `nproc`
+nix-channel --update && nix-env -u -j $(nproc)
 
 mkdir -p ${HOME}/.config/nixpkgs/
 ln -s ${NIX_NEW_HOME}/overlays ${HOME}/.config/nixpkgs/overlays
@@ -21,10 +29,10 @@ self: super:
 EOF
 
 # create a nix version that targets the custom location
-nix-env -i nix nss-cacert -j `nproc`
+nix-env -i nix nss-cacert -j $(nproc)
 
 # create a nix version that also *lives* in the custom location
-nix-env -i nix nss-cacert -j `nproc`
+nix-env -i nix nss-cacert -j $(nproc)
 
 # find the user-environment that just got created
 USER_ENV=`find ${NIX_NEW_HOME}/store/ -name "*-user-environment"`

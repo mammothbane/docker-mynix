@@ -1,9 +1,7 @@
 FROM nixos/nix
-MAINTAINER Yann Hodique <yann.hodique@gmail.com>
+LABEL maintainer="Nathan Perry <np@nathanperry.dev>"
 
-RUN apk add --update coreutils
-
-VOLUME /target
 ADD run.sh /run.sh
 
-CMD [ "/run.sh" ]
+VOLUME ["/target"]
+ENTRYPOINT [ "/run.sh" ]
